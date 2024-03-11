@@ -13,7 +13,7 @@ class Home(TemplateView):
         projects = Project.objects.filter(user=user).order_by('-created_at')
         projects_tasks = {}
         for p in projects:
-            projects_tasks[p] = Task.objects.filter(project=p).order_by('priority')
+            projects_tasks[p] = Task.objects.filter(project=p).order_by('-priority')
         context['projects'] = projects_tasks
         return context
 
@@ -53,7 +53,7 @@ class AddTask(View):
     def post(self, request, **kwargs) -> HttpResponse:
         data = request.POST
         project = Project.objects.get(id=kwargs['id'])
-        tasks = Task.objects.filter(project=project).order_by('priority')
+        tasks = Task.objects.filter(project=project).order_by('-priority')
         user = self.request.user
         if tasks:
             task = Task(project=project, name=data[f'task{project.id}'], user=user,
@@ -61,7 +61,7 @@ class AddTask(View):
         else:
             task = Task(project=project, name=data[f'task{project.id}'], user=user)
         task.save()
-        tasks = Task.objects.filter(project=project).order_by('priority')
+        tasks = Task.objects.filter(project=project).order_by('-priority')
         html_resp = render_to_string('tasks_after_add_delete.html', {'tasks': tasks, 'p': project}, request=request)
         return HttpResponse(html_resp)
 
@@ -70,7 +70,7 @@ class EditTask(View):
     def delete(self, request, **kwargs) -> HttpResponse:
         task = Task.objects.get(id=kwargs['id'])
         task.delete()
-        tasks = Task.objects.filter(project=task.project).order_by('priority')
+        tasks = Task.objects.filter(project=task.project).order_by('-priority')
         html_resp = render_to_string('tasks_after_add_delete.html', {'tasks': tasks, 'p': task.project}, request=request)
         return HttpResponse(html_resp)
 
@@ -83,4 +83,22 @@ class EditTask(View):
         else:
             context = {'task': task, 'p': task.project, 'bg': 'white'}
         html_resp = render_to_string('task_template.html', context, request=request)
+        return HttpResponse(html_resp)
+
+    def post(self, request, **kwargs):
+        data = request.POST
+        task = Task.objects.get(id=self.kwargs['id'])
+        tasks = [i for i in Task.objects.filter(project=task.project).order_by('-priority')]
+        if data.get(f'upPriority{kwargs["id"]}') and len(tasks) > 1:
+            task_up = tasks[tasks.index(task)-1]
+            task.priority, task_up.priority = task_up.priority, task.priority
+            task.save()
+            task_up.save()
+        elif data.get(f'downPriority{kwargs["id"]}') and len(tasks) > 1:
+            task_down = tasks[tasks.index(task)+1]
+            task.priority, task_down.priority = task_down.priority, task.priority
+            task.save()
+            task_down.save()
+        tasks = Task.objects.filter(project=task.project).order_by('-priority')
+        html_resp = render_to_string('tasks_after_add_delete.html', {'tasks': tasks, 'p': task.project}, request=request)
         return HttpResponse(html_resp)
