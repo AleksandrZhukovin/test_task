@@ -1,0 +1,43 @@
+{% extends "account/base_entrance.html" %}
+{% load allauth i18n %}
+{% block head_title %}
+    {% trans "Signup" %}
+{% endblock head_title %}
+{% block content %}
+    <div class="row">
+        <div class="col-12 text-center">
+            <h2 class="fw-bold text-success my-3">Sign Up</h2>
+            <a href="/accounts/google/login/?process=login" type="button" class="btn btn-success">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-google" viewBox="0 0 16 16">
+                    <path d="M15.545 6.558a9.4 9.4 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.7 7.7 0 0 1 5.352 2.082l-2.284 2.284A4.35 4.35 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.304a4.8 4.8 0 0 0 0 3.063h.003c.635 1.893 2.405 3.301 4.492 3.301 1.078 0 2.004-.276 2.722-.764h-.003a3.7 3.7 0 0 0 1.599-2.431H8v-3.08z"></path>
+                </svg>
+                Google
+              </a>
+            {% url 'account_signup' as action_url %}
+            {% element form form=form method="post" action=action_url tags="entrance,signup" %}
+                {% slot body %}
+                    {% csrf_token %}
+                    <input class="form-control mt-2" style="width: 50%; margin-left: 25%;" type="text" name="username" placeholder="Username" autocomplete="username" minlength="1" maxlength="150" required="" id="id_username">
+                    <input class="form-control mt-2" style="width: 50%; margin-left: 25%;" type="email" name="email" placeholder="Email address" autocomplete="email" maxlength="320" id="id_email">
+                    <input class="form-control mt-2" style="width: 50%; margin-left: 25%;" type="password" name="password1" placeholder="Password" autocomplete="new-password" required="" aria-describedby="id_password1_helptext" id="id_password1" aria-autocomplete="list">
+                    <div id="passwordHelpBlock mt-2" style="width: 50%; margin-left: 25%;" class="form-text">
+                        Your password can’t be too similar to your other personal information. Your password must contain at least 8 characters. Your password can’t be a commonly used password. Your password can’t be entirely numeric.
+                    </div>
+                    <input class="form-control mt-2" style="width: 50%; margin-left: 25%;" type="password" name="password2" placeholder="Password (again)" autocomplete="new-password" required="" id="id_password2">
+                    {% if redirect_field_value %}
+                        <input type="hidden"
+                               name="{{ redirect_field_name }}"
+                               value="{{ redirect_field_value }}" />
+                    {% endif %}
+                {% endslot %}
+                {% slot actions %}
+                    <input type="submit" value="Sign Up" class="my-3 btn btn-success">
+                {% endslot %}
+            {% endelement %}
+            <p>
+                {% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">sign in</a>.{% endblocktrans %}
+            </p>
+        </div>
+    </div>
+
+{% endblock content %}
