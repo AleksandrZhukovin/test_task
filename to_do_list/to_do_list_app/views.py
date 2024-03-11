@@ -2,6 +2,7 @@ from django.views.generic.base import TemplateView, View
 from .models import Project, Task
 from django.http import JsonResponse, HttpResponse
 from django.template.loader import render_to_string
+from datetime import date
 
 
 class Home(TemplateView):
@@ -15,6 +16,7 @@ class Home(TemplateView):
         for p in projects:
             projects_tasks[p] = Task.objects.filter(project=p).order_by('-priority')
         context['projects'] = projects_tasks
+        context['today'] = date.today()
         return context
 
 
@@ -62,7 +64,8 @@ class AddTask(View):
             task = Task(project=project, name=data[f'task{project.id}'], user=user)
         task.save()
         tasks = Task.objects.filter(project=project).order_by('-priority')
-        html_resp = render_to_string('tasks_after_add_delete.html', {'tasks': tasks, 'p': project}, request=request)
+        html_resp = render_to_string('tasks_after_add_delete.html', {'tasks': tasks, 'p': task.project,
+                                                                     'today': date.today()}, request=request)
         return HttpResponse(html_resp)
 
 
@@ -71,21 +74,20 @@ class EditTask(View):
         task = Task.objects.get(id=kwargs['id'])
         task.delete()
         tasks = Task.objects.filter(project=task.project).order_by('-priority')
-        html_resp = render_to_string('tasks_after_add_delete.html', {'tasks': tasks, 'p': task.project}, request=request)
+        html_resp = render_to_string('tasks_after_add_delete.html', {'tasks': tasks, 'p': task.project,
+                                                                     'today': date.today()}, request=request)
         return HttpResponse(html_resp)
 
     def patch(self, request, **kwargs) -> HttpResponse:
         task = Task.objects.get(id=kwargs['id'])
         task.status = not task.status
         task.save()
-        if task.status:
-            context = {'task': task, 'p': task.project, 'bg': '#97FF97', 'checked': 'checked'}
-        else:
-            context = {'task': task, 'p': task.project, 'bg': 'white'}
-        html_resp = render_to_string('task_template.html', context, request=request)
+        tasks = Task.objects.filter(project=task.project).order_by('-priority')
+        html_resp = render_to_string('tasks_after_add_delete.html', {'tasks': tasks, 'p': task.project,
+                                                                     'today': date.today()}, request=request)
         return HttpResponse(html_resp)
 
-    def post(self, request, **kwargs):
+    def post(self, request, **kwargs) -> HttpResponse:
         data = request.POST
         task = Task.objects.get(id=self.kwargs['id'])
         tasks = [i for i in Task.objects.filter(project=task.project).order_by('-priority')]
@@ -99,6 +101,21 @@ class EditTask(View):
             task.priority, task_down.priority = task_down.priority, task.priority
             task.save()
             task_down.save()
+        elif data.get(f'editTaskName{kwargs["id"]}'):
+            task.name = data.get(f'editTaskName{kwargs["id"]}')
+            if data.get(f'editTaskDeadline{kwargs["id"]}'):
+                year = data.get(f'editTaskDeadline{kwargs["id"]}')[6:]
+                month = data.get(f'editTaskDeadline{kwargs["id"]}')[:2]
+                day = data.get(f'editTaskDeadline{kwargs["id"]}')[3:5]
+                task.deadline = f'{year}-{month}-{day}'
+            task.save()
         tasks = Task.objects.filter(project=task.project).order_by('-priority')
-        html_resp = render_to_string('tasks_after_add_delete.html', {'tasks': tasks, 'p': task.project}, request=request)
+        html_resp = render_to_string('tasks_after_add_delete.html', {'tasks': tasks, 'p': task.project,
+                                                                     'today': date.today()}, request=request)
+        return HttpResponse(html_resp)
+
+    def put(self, request, **kwargs) -> HttpResponse:
+        task = Task.objects.get(id=self.kwargs['id'])
+        html_resp = render_to_string('task_edit_form.html', {'task': task, 'p': task.project},
+                                     request=request)
         return HttpResponse(html_resp)
