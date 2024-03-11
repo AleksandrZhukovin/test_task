@@ -63,3 +63,12 @@ class AddTask(View):
         task.save()
         html_resp = render_to_string('task_template.html', {'task': task})
         return HttpResponse(html_resp)
+
+
+class EditTask(View):
+    def delete(self, request, **kwargs) -> HttpResponse:
+        task = Task.objects.get(id=kwargs['id'])
+        task.delete()
+        tasks = Task.objects.filter(project=task.project).order_by('priority')
+        html_resp = render_to_string('tasks_after_delete.html', {'tasks': tasks, 'p': task.project}, request=request)
+        return HttpResponse(html_resp)
