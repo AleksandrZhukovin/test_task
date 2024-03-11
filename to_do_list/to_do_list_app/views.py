@@ -61,7 +61,8 @@ class AddTask(View):
         else:
             task = Task(project=project, name=data[f'task{project.id}'], user=user)
         task.save()
-        html_resp = render_to_string('task_template.html', {'task': task})
+        tasks = Task.objects.filter(project=project).order_by('priority')
+        html_resp = render_to_string('tasks_after_add_delete.html', {'tasks': tasks, 'p': project}, request=request)
         return HttpResponse(html_resp)
 
 
@@ -70,5 +71,16 @@ class EditTask(View):
         task = Task.objects.get(id=kwargs['id'])
         task.delete()
         tasks = Task.objects.filter(project=task.project).order_by('priority')
-        html_resp = render_to_string('tasks_after_delete.html', {'tasks': tasks, 'p': task.project}, request=request)
+        html_resp = render_to_string('tasks_after_add_delete.html', {'tasks': tasks, 'p': task.project}, request=request)
+        return HttpResponse(html_resp)
+
+    def patch(self, request, **kwargs) -> HttpResponse:
+        task = Task.objects.get(id=kwargs['id'])
+        task.status = not task.status
+        task.save()
+        if task.status:
+            context = {'task': task, 'p': task.project, 'bg': '#97FF97', 'checked': 'checked'}
+        else:
+            context = {'task': task, 'p': task.project, 'bg': 'white'}
+        html_resp = render_to_string('task_template.html', context, request=request)
         return HttpResponse(html_resp)
