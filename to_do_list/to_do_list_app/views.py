@@ -1,5 +1,6 @@
 from django.views.generic.base import TemplateView, View
 from .models import Project, Task
+from django.shortcuts import redirect
 from django.http import JsonResponse, HttpResponse
 from django.template.loader import render_to_string
 from datetime import date
@@ -26,8 +27,12 @@ class AddToDoList(View):
         user = self.request.user
         project = Project(user=user, name=data['name'])
         project.save()
-        html_resp = render_to_string('project_template.html', {'project': project})
+        html_resp = render_to_string('project_template.html', {'project': project}, request=request)
         return JsonResponse(html_resp, safe=False)
+
+    @staticmethod
+    def get(request) -> redirect:
+        return redirect('/')
 
 
 class EditToDoList(View):
@@ -38,17 +43,24 @@ class EditToDoList(View):
         html_resp = render_to_string('project_name_template.html', {'project': project}, request=request)
         return HttpResponse(html_resp)
 
-    def delete(self, request, **kwargs):
+    @staticmethod
+    def delete(request, **kwargs):
         project = Project.objects.get(id=kwargs['id'])
         project.delete()
-        projects = Project.objects.filter(user=self.request.user).order_by('-created_at')
-        html_resp = render_to_string('projects_after_delete.html', {'projects': projects}, request=request)
+        html_resp = ''
+        if not Project.objects.all():
+            html_resp = render_to_string('message.html')
         return HttpResponse(html_resp)
 
-    def patch(self, request, **kwargs) -> HttpResponse:
+    @staticmethod
+    def patch(request, **kwargs) -> HttpResponse:
         project = Project.objects.get(id=kwargs['id'])
         html_resp = render_to_string('edit_project_form.html', {'project': project}, request=request)
         return HttpResponse(html_resp)
+
+    @staticmethod
+    def get(request, **kwargs) -> redirect:
+        return redirect('/')
 
 
 class AddTask(View):
@@ -59,7 +71,7 @@ class AddTask(View):
         user = self.request.user
         if tasks:
             task = Task(project=project, name=data[f'task{project.id}'], user=user,
-                        priority=tasks.reverse()[0].priority+1)
+                        priority=tasks[0].priority+1)
         else:
             task = Task(project=project, name=data[f'task{project.id}'], user=user)
         task.save()
@@ -68,17 +80,26 @@ class AddTask(View):
                                                                      'today': date.today()}, request=request)
         return HttpResponse(html_resp)
 
+    @staticmethod
+    def get(request, **kwargs) -> redirect:
+        return redirect('/')
+
 
 class EditTask(View):
-    def delete(self, request, **kwargs) -> HttpResponse:
+    @staticmethod
+    def delete(request, **kwargs) -> HttpResponse:
         task = Task.objects.get(id=kwargs['id'])
         task.delete()
         tasks = Task.objects.filter(project=task.project).order_by('-priority')
-        html_resp = render_to_string('tasks_after_add_delete.html', {'tasks': tasks, 'p': task.project,
-                                                                     'today': date.today()}, request=request)
+        if tasks:
+            html_resp = render_to_string('tasks_after_add_delete.html', {'tasks': tasks, 'p': task.project,
+                                                                         'today': date.today()}, request=request)
+        else:
+            html_resp = '<h3 class="text-secondary text-center my-3">No tasks yet.</h3>'
         return HttpResponse(html_resp)
 
-    def patch(self, request, **kwargs) -> HttpResponse:
+    @staticmethod
+    def patch(request, **kwargs) -> HttpResponse:
         task = Task.objects.get(id=kwargs['id'])
         task.status = not task.status
         task.save()
@@ -97,7 +118,10 @@ class EditTask(View):
             task.save()
             task_up.save()
         elif data.get(f'downPriority{kwargs["id"]}') and len(tasks) > 1:
-            task_down = tasks[tasks.index(task)+1]
+            if tasks.index(task) == len(tasks) - 1:
+                task_down = tasks[0]
+            else:
+                task_down = tasks[tasks.index(task)+1]
             task.priority, task_down.priority = task_down.priority, task.priority
             task.save()
             task_down.save()
@@ -114,8 +138,13 @@ class EditTask(View):
                                                                      'today': date.today()}, request=request)
         return HttpResponse(html_resp)
 
-    def put(self, request, **kwargs) -> HttpResponse:
-        task = Task.objects.get(id=self.kwargs['id'])
+    @staticmethod
+    def put(request, **kwargs) -> HttpResponse:
+        task = Task.objects.get(id=kwargs['id'])
         html_resp = render_to_string('task_edit_form.html', {'task': task, 'p': task.project},
                                      request=request)
         return HttpResponse(html_resp)
+
+    @staticmethod
+    def get(request, **kwargs) -> redirect:
+        return redirect('/')
