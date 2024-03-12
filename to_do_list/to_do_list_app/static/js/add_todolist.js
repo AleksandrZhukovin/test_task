@@ -32,6 +32,7 @@ $(function(){
                 document.getElementById('main').inert = false;
                 document.getElementById('addToDoList').close();
                 $('#projectName').val('');
+                htmx.process(document.body);
             }
         })
     })
