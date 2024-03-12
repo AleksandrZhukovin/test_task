@@ -1,5 +1,5 @@
 <div class="input-group">
-    <input name="editProject{{ project.id }}" value="{{ project.name }}" type="text" class="form-control">
+    <input placeholder="Set TODO list name here" name="editProject{{ project.id }}" value="{{ project.name }}" type="text" class="form-control">
     <div class="input-group-append">
         <button hx-post="/edit_todolist/{{ project.id }}/" hx-target="#projectName{{ project.id }}" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-include="[name='editProject{{ project.id }}']" class="btn btn-success" style="border-radius: 0px 10px 10px 0px;" type="button">Enter</button>
     </div>

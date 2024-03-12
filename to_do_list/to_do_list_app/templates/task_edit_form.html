@@ -1,12 +1,12 @@
 <div class="row d-flex" style="border-top: 1px solid #6C757D; {% if task.status %} background-color: #97FF97; {% endif %}">
     <div class="col-1 d-flex justify-content-center align-items-center" style="border-right: 1px solid #6C757D;">
-        <input hx-target="#task{{ task.id }}" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-patch="/edit_task/{{ task.id }}/" class="form-check-input" type="checkbox" {% if task.status %} checked {% endif %}>
+        <input hx-target="#tasks{{ p.id }}" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-patch="/edit_task/{{ task.id }}/" class="form-check-input" type="checkbox" {% if task.status %} checked {% endif %}>
     </div>
     <div class="col-6" style="border-right: 1px solid #6C757D;">
-        <input name="editTaskName{{ task.id }}" value="{{ task.name }}" type="text" class="form-control my-1">
+        <input placeholder="Set task name here" name="editTaskName{{ task.id }}" value="{{ task.name }}" type="text" class="form-control my-1">
     </div>
     <div class="col-2 text-center" style="border-right: 1px solid #6C757D;">
-        <input name="editTaskDeadline{{ task.id }}" class="form-control my-1" data-provide="datepicker" value="{{ task.deadline|date:'M/d/Y' }}">
+        <input placeholder="Set deadline here" name="editTaskDeadline{{ task.id }}" class="form-control my-1" data-provide="datepicker" value="{{ task.deadline|date:'M/d/Y' }}">
    </div>
     <div class="col-3 d-flex justify-content-center">
         <div class="btn-group my-1">
