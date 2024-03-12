@@ -171,3 +171,6 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'sashokzuk@gmail.com'
 EMAIL_HOST_PASSWORD = 'tggy lhgg vzou dpwy'
+
+LOGIN_URL = '/accounts/login'
+LOGOUT_REDIRECT_URL = '/accounts/login'
