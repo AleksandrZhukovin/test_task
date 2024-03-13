@@ -1,6 +1,6 @@
 from django.test import RequestFactory, TestCase
 from to_do_list_app.models import User, Task, Project
-from to_do_list_app.views import Home, AddToDoList, EditToDoList, AddTask, EditTask
+from to_do_list_app.views import AddToDoList, EditToDoList, AddTask, EditTask
 
 
 class GetRequestsTest(TestCase):
