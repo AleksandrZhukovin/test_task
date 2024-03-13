@@ -3,7 +3,7 @@ from to_do_list_app.models import User, Task, Project
 from to_do_list_app.views import AddToDoList, EditToDoList, AddTask, EditTask
 
 
-class GetRequestsTest(TestCase):
+class GetRequestsTest(TestCase):  # tests for get requests
     @classmethod
     def setUpTestData(cls) -> None:
         User.objects.create_user(username='test_user', password='12345')
@@ -17,7 +17,7 @@ class GetRequestsTest(TestCase):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
 
-    def test_edit_urls_request(self) -> None:
+    def test_edit_urls_request(self) -> None:  # testing how pages that not supposed to process get requests react
         response_0 = self.client.get('/add_to_do_list')
         response_1 = self.client.get('/edit_todolist/1')
         response_2 = self.client.get('/add_task/1')
@@ -28,7 +28,7 @@ class GetRequestsTest(TestCase):
         self.assertEqual(response_3.status_code, 301)
 
 
-class DataSendRequestsTest(TestCase):
+class CRUDRequestsTest(TestCase):  # test for request for CRUD operations
     @classmethod
     def setUpTestData(cls) -> None:
         pass
@@ -39,7 +39,7 @@ class DataSendRequestsTest(TestCase):
         project = Project(name='Project', user=self.user)
         project.save()
 
-    def test_view(self) -> None:
+    def test_add_project(self) -> None:
         request = self.factory.post("/add_to_do_list", {'name': 'test'})
         request.user = self.user
         response = AddToDoList.as_view()(request)

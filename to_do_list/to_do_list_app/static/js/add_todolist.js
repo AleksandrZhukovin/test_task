@@ -1,8 +1,9 @@
+/* Dialog window open|close functions*/
 $(function(){
     $('#addToDoListBtn').click(function(){
         document.getElementById('main').inert = true;
         document.getElementById('addToDoList').show();
-        document.getElementById('addToDoList').classList.add('dialog_appear');
+        document.getElementById('addToDoList').classList.add('dialog_appear');  // dialog window smooth appear
     })
 })
 
@@ -14,6 +15,7 @@ $(function(){
     })
 })
 
+/* AJAX for project creation*/
 $(function(){
     $('#sendToDoList').click(function(){
         $.ajax('/add_to_do_list/', {
