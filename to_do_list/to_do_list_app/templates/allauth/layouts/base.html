@@ -28,6 +28,15 @@
                     {% endif %}
                 </div>
             </div>
+            <div class="mt-3 row">
+                <div class="col-12 text-center">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <p class="text-danger">{{ message }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
             {% block content %}
             {% endblock content %}
         {% endblock body %}
