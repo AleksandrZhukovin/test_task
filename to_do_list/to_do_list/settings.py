@@ -56,8 +56,6 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
 ]
 
-ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
-
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
@@ -174,3 +172,4 @@ EMAIL_HOST_PASSWORD = 'tggy lhgg vzou dpwy'
 
 LOGIN_URL = '/accounts/login'
 LOGOUT_REDIRECT_URL = '/accounts/login'
+LOGIN_REDIRECT_URL = '/'
