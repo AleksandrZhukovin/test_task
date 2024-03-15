@@ -12,10 +12,10 @@ launch):
 1. Open terminal and paste the following command 
     ``git clone https://github.com/AleksandrZhukovin/test_task``. It will copy all the files to your 
     directory.
-2. Create and activate virtual environment for project with ``python -m venv venv`` ``venv/bin/activate`` 
+2. Create and activate virtual environment for project with ``python -m venv test_task/venv`` ``cd test_task`` ``venv/Scripts/activate`` 
    (or use specific version of these commands depending on your OS and the venv dir).
-3. Use command ``cd test_task/to_do_list`` to move to the project dir.
-4. To install all necessary libraries use ``pip install -r requirements.txt``.
+3. To install all necessary libraries use ``pip install -r requirements.txt``.
+4. Use command ``cd to_do_list`` to move to the project dir.
 5. Make DB migrations with ``python manage.py makemigrations`` ``python manage.py migrate``.
 6. Now you are ready to use the app by using command ``python manage.py runserver``.
 ## In case you edit code
