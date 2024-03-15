@@ -31,18 +31,16 @@
             <div class="mt-3 row">
                 <div class="col-12 text-center">
                     {% if form.errors %}
-                        {% for field in form %}
-                            {% for error in field.errors %}
-                                <div class="alert alert-error">
-                                    <p class="text-danger fw-bold">{{ error|escape }}</p>
-                                </div>
+                        <div class="alert alert-error">
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <strong class="text-danger">{{ error|escape }}</strong>
+                                {% endfor %}
                             {% endfor %}
-                        {% endfor %}
-                        {% for error in form.non_field_errors %}
-                            <div class="alert alert-error">
-                                <p class="text-danger fw-bold">{{ error|escape }}</p>
-                            </div>
-                        {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <strong class="text-danger fw-bold">{{ error|escape }}</strong>
+                            {% endfor %}
+                        </div>
                     {% endif %}
                 </div>
             </div>
