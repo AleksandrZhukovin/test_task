@@ -6,7 +6,7 @@
         <input placeholder="Set task name here" name="editTaskName{{ task.id }}" value="{{ task.name }}" type="text" class="form-control my-1">
     </div>
     <div class="col-5 col-md-2 text-center task-border">
-        <input placeholder="Set deadline here" name="editTaskDeadline{{ task.id }}" class="form-control my-1" data-provide="datepicker" value="{{ task.deadline|date:'M/d/Y' }}">
+        <input placeholder="Set deadline here" name="editTaskDeadline{{ task.id }}" class="form-control my-1" data-provide="datepicker" value="{{ task.deadline|date:'m/d/Y' }}">
    </div>
     <div class="col-11 col-md-3 d-flex justify-content-center">
         <div class="btn-group my-1">
