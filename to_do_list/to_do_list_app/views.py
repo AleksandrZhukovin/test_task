@@ -52,7 +52,7 @@ class EditToDoList(View):
         project = Project.objects.get(id=kwargs['id'])
         project.delete()
         html_resp = ''
-        if not Project.objects.all():
+        if not Project.objects.filter(user=request.user):
             html_resp = render_to_string('message.html')
         return HttpResponse(html_resp)
 
