@@ -1,12 +1,16 @@
-from django.views.generic.base import TemplateView, View
 from .models import Project, Task
+
+from datetime import date
+from braces.views import FormMessagesMixin
+
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.http import JsonResponse, HttpResponse
 from django.template.loader import render_to_string
-from datetime import date
+from django.views.generic.base import TemplateView, View
 
 
-class Home(TemplateView):
+class Home(LoginRequiredMixin, TemplateView):
     template_name = 'home.html'
 
     def get_context_data(self, **kwargs) -> dict:
@@ -21,7 +25,10 @@ class Home(TemplateView):
         return context
 
 
-class AddToDoList(View):
+class AddToDoList(LoginRequiredMixin, FormMessagesMixin, View):
+    form_valid_message = _('List successfully added.')
+    form_invalid_message = _('List cannot be added.')
+
     """Creating project"""
     def post(self, request) -> JsonResponse:
         data = request.POST
@@ -37,7 +44,10 @@ class AddToDoList(View):
         return redirect('/')
 
 
-class EditToDoList(View):
+class EditToDoList(LoginRequiredMixin, FormMessagesMixin, View):
+    form_valid_message = _('List successfully edited.')
+    form_invalid_message = _('List cannot be edited.')
+
     """Post request for edit name"""
     def post(self, request, **kwargs) -> HttpResponse:
         project = Project.objects.get(id=self.kwargs['id'])
@@ -69,7 +79,10 @@ class EditToDoList(View):
         return redirect('/')
 
 
-class AddTask(View):
+class AddTask(LoginRequiredMixin, FormMessagesMixin, View):
+    form_valid_message = _('Task successfully added.')
+    form_invalid_message = _('Task cannot be added.')
+
     """Creating task"""
     def post(self, request, **kwargs) -> HttpResponse:
         data = request.POST
@@ -94,7 +107,10 @@ class AddTask(View):
         return redirect('/')
 
 
-class EditTask(View):
+class EditTask(LoginRequiredMixin, FormMessagesMixin, View):
+    form_valid_message = _('Task successfully edited.')
+    form_invalid_message = _('List cannot be edited.')
+
     """Deleting task"""
     @staticmethod
     def delete(request, **kwargs) -> HttpResponse:
